@@ -37,7 +37,6 @@ with open('Bagging\optdigits.tes', 'r') as testingFile:
       classVotes.append([0,0,0,0,0,0,0,0,0,0]) #inititalizing the class votes for each test sample
 
 print("Started my base and ensemble classifier ...")
-print(len(classVotes))
 for k in range(20): #we will create 20 bootstrap samples here (k = 20). One classifier will be created for each bootstrap sample
     accuracy = 1
     bootstrapSample = resample(dbTraining, n_samples=len(dbTraining), replace=True)
@@ -80,11 +79,6 @@ for k in range(20): #we will create 20 bootstrap samples here (k = 20). One clas
         prediction = clf.predict(X_test)[0]
         classVotes[i][int(prediction)] += 1  
 
-    #    1 0 0 0 0 0 0 0 
-    #    2 0 0 0 0 0 0 0
-    #    3 0 0 0 0 0 0 0
-    #    4 0 0 0 0 0 0 0
-        #print(classVotes[i])
         if k == 0: #for only the first base classifier, compare the prediction with the true label of the test sample here to start calculating its accuracy
             if(prediction == trueLabel):
                 numCorrect +=1
@@ -99,7 +93,7 @@ for k in range(20): #we will create 20 bootstrap samples here (k = 20). One clas
 #now, compare the final ensemble prediction (majority vote in classVotes) for each test sample with the 
 # ground truth label to calculate the accuracy of the ensemble classifier (all base classifiers together)
 #--> add your Python code here
-numCorrect = 0
+numCounter = 0
 for num, array in enumerate(classVotes):
     max = 0
     maxIndex = 0
@@ -107,10 +101,12 @@ for num, array in enumerate(classVotes):
         if(value > max):
             max = value
             maxIndex = index
-    if(maxIndex == test_labels[num]):
-        numCorrect += 1
+    if(maxIndex == int(test_labels[num])):
+        numCounter += 1
 
-accuracy = numCorrect / len(dbTest)
+print(numCounter)
+accuracy = numCounter / len(dbTest)
+
 #printing the ensemble accuracy here
 print("Finished my ensemble classifier (slow but higher accuracy) ...")
 print("My ensemble accuracy: " + str(accuracy))
@@ -126,11 +122,28 @@ clf.fit(X_training,Y_training)
 
 #make the Random Forest prediction for each test sample. Example: class_predicted_rf = clf.predict([[3, 1, 2, 1, ...]]
 #--> add your Python code here
+numCounter = 0
+trueLabel = 100
+for i, testSample in enumerate(dbTest):
+    #print(testSample)
+    X_test = []
+    row = []
+    for x, value in enumerate(testSample):
+        if(x == len(testSample) - 1):
+            trueLabel = value
+        else:
+            row.append(value)
+    X_test.append(row)
 
+    predict_Rf = clf.predict(X_test)[0]
+    #print(str(predict_Rf) + " " + str(trueLabel))
 #compare the Random Forest prediction for each test sample with the ground truth label to calculate its accuracy
 #--> add your Python code here
-
+    if(int(predict_Rf) == int(test_labels[i])):
+        numCounter += 1
 #printing Random Forest accuracy here
+#print(numCounter)
+accuracy = numCounter / len(dbTest)
 print("Random Forest accuracy: " + str(accuracy))
 
 print("Finished Random Forest algorithm (much faster and higher accuracy!) ...")
