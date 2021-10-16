@@ -147,6 +147,7 @@ accuracy = numCounter / len(dbTest)
 print("Random Forest accuracy: " + str(accuracy))
 
 print("Finished Random Forest algorithm (much faster and higher accuracy!) ...")
+print("")
 
 
 
